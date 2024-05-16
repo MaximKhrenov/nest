@@ -6,7 +6,6 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  Patch,
   Post,
 } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';

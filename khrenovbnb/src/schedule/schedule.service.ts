@@ -7,7 +7,7 @@ import {
 import { Model } from 'mongoose';
 import { DtoSchedule } from './dto/dto.schedule';
 import * as mongoose from 'mongoose';
-import {RoomModel, RoomModelDocument} from "../room/room.model/room.model";
+import { RoomModel, RoomModelDocument } from '../room/room.model/room.model';
 
 @Injectable()
 export class ScheduleService {
