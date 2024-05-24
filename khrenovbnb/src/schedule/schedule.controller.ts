@@ -22,7 +22,7 @@ export class ScheduleController {
   @Get('item/:id')
   async getScheduleById(@Param('id') id: string) {
     const getScheduleById = await this.scheduleService.getScheduleById(id);
-    if(!getScheduleById){
+    if (!getScheduleById) {
       throw new HttpException(
         scheduleConstants.NOT_FOUND,
         HttpStatus.NOT_FOUND,
@@ -32,13 +32,7 @@ export class ScheduleController {
   }
   @Post('create')
   async createSchedule(@Body() dto: DtoSchedule) {
-    const createSchema = await this.scheduleService.createSchedule(dto);
-    if (!createSchema) {
-      throw new HttpException(
-        scheduleConstants.NOT_SCHEDULE,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    return this.scheduleService.createSchedule(dto);
   }
   @Delete(':id')
   async deleteSchedule(@Param() id: string) {

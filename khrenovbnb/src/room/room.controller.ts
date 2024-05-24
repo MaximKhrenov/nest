@@ -12,7 +12,6 @@ import { RoomDto } from './dto/room.dto';
 import { Param } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { roomConstants } from './room.constants';
-
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}

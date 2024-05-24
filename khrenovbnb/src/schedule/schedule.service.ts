@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   ScheduleModel,
@@ -8,6 +13,7 @@ import { Model } from 'mongoose';
 import { DtoSchedule } from './dto/dto.schedule';
 import * as mongoose from 'mongoose';
 import { RoomService } from '../room/room.service';
+import { scheduleConstants } from './schedule.constants';
 
 @Injectable()
 export class ScheduleService {
@@ -23,17 +29,24 @@ export class ScheduleService {
     const getRoomById = await this.roomService.getRoomById(
       dto.idRoom.toString(),
     );
+    if (!getRoomById) {
+      throw new NotFoundException();
+    }
     const getDateScheduleForRoom = getAllScheduleByIDRoom.map((el) =>
       el.dateBooking.toDateString(),
     );
     if (
-      !getDateScheduleForRoom.includes(
-        new Date(dto.dateBooking).toDateString(),
-      ) &&
-      getRoomById.isActive
+      getDateScheduleForRoom.includes(new Date(dto.dateBooking).toDateString())
     ) {
-      return this.scheduleModel.create(dto);
+      throw new HttpException(
+        scheduleConstants.NOT_SCHEDULE,
+        HttpStatus.NOT_FOUND,
+      );
     }
+    if (!getRoomById?.isActive) {
+      throw new NotFoundException();
+    }
+    return this.scheduleModel.create(dto);
   }
   async getSchedule(): Promise<ScheduleModel[]> {
     return this.scheduleModel.find().exec();
