@@ -34,6 +34,15 @@ describe('AppController (e2e)', () => {
         expect(createdRoomId).toBeDefined();
       });
   });
+  it('room/create (POST) - Failed', async () => {
+    return request(app.getHttpServer())
+      .post('/room/create')
+      .send({ ...testRoomDto, squareRoom: 40 })
+      .expect(400)
+      .then(({ body }: request.Response) => {
+        console.log(body);
+      });
+  });
   it('schedule/create (POST) - Success', async () => {
     const testScheduleDto = {
       idRoom: createdRoomId,
@@ -59,6 +68,18 @@ describe('AppController (e2e)', () => {
       .expect(404)
       .then(({ body }: request.Response) => {
         expect(body).toBeDefined();
+      });
+  });
+  it('schedule/create (POST) - Failed date', async () => {
+    return request(app.getHttpServer())
+      .post('/schedule/create')
+      .send({
+        idRoom: new Types.ObjectId().toHexString(),
+        dateBooking: 21_07,
+      })
+      .expect(400)
+      .then(({ body }: request.Response) => {
+        console.log(body);
       });
   });
   it('room/item/:id (GET) - success', async () => {

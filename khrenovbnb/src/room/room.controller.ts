@@ -6,7 +6,7 @@ import {
   Body,
   Patch,
   HttpException,
-  HttpStatus,
+  HttpStatus, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { RoomDto } from './dto/room.dto';
 import { Param } from '@nestjs/common';
@@ -16,6 +16,7 @@ import { roomConstants } from './room.constants';
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
+  @UsePipes(new ValidationPipe())
   @Post('create')
   async create(@Body() dto: RoomDto) {
     return this.roomService.create(dto);
