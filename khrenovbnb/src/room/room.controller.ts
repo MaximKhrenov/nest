@@ -1,26 +1,37 @@
 import {
+  Body,
   Controller,
-  Post,
   Delete,
   Get,
-  Body,
-  Patch,
   HttpException,
-  HttpStatus, UsePipes, ValidationPipe,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UsePipes,
+  UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { RoomDto } from './dto/room.dto';
-import { Param } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { roomConstants } from './room.constants';
+import { UserEmailDecorator } from '../auth/decorators/user-email.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../user/user.model/role.enum';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import {RolesGuard} from "../auth/guards/roles.guard";
 
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
   @UsePipes(new ValidationPipe())
   @Post('create')
+  @UseGuards(JwtAuthGuard)
   async create(@Body() dto: RoomDto) {
     return this.roomService.create(dto);
   }
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     const deletedRoom = await this.roomService.delete(id);
@@ -29,7 +40,7 @@ export class RoomController {
     }
   }
   @Get('item/:id')
-  async get(@Param('id') id: string) {
+  async get(@Param('id') id: string, @UserEmailDecorator() email: string) {
     const getRoomById = await this.roomService.getRoomById(id);
     if (!getRoomById) {
       throw new HttpException(roomConstants.NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -40,6 +51,9 @@ export class RoomController {
   async getAllRooms() {
     return this.roomService.getAllRooms();
   }
+  // @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('update/:id')
   async update(@Param('id') id: string, @Body() dto: RoomDto) {
     return this.roomService.update(id, dto);
