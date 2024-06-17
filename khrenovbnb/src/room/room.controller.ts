@@ -26,7 +26,8 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
   @UsePipes(new ValidationPipe())
   @Post('create')
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() dto: RoomDto) {
     return this.roomService.create(dto);
   }
